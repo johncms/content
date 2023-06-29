@@ -6,6 +6,7 @@ namespace Johncms\Content\Controllers\Admin;
 
 use Johncms\Content\Forms\ContentTypeForm;
 use Johncms\Content\Models\ContentType;
+use Johncms\Content\Resources\ContentTypeResource;
 use Johncms\Controller\BaseAdminController;
 use Johncms\Exceptions\ValidationException;
 use Johncms\Http\Request;
@@ -23,9 +24,16 @@ class ContentAdminController extends BaseAdminController
         $this->metaTagManager->setAll(__('Content'));
     }
 
-    public function index(): string
+    public function index(Session $session): string
     {
-        return $this->render->render('johncms/content::admin/index', []);
+        $contentTypes = ContentType::query()->get();
+
+        return $this->render->render('johncms/content::admin/index', [
+            'data' => [
+                'message'      => $session->getFlash('message'),
+                'contentTypes' => ContentTypeResource::createFromCollection($contentTypes)->toArray(),
+            ],
+        ]);
     }
 
     public function createContentType(Request $request, Session $session, ContentTypeForm $form): string | RedirectResponse
