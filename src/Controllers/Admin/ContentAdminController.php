@@ -59,4 +59,21 @@ class ContentAdminController extends BaseAdminController
             'listUrl'          => route('content.admin.index'),
         ]);
     }
+
+    public function delete(int $id, Request $request, Session $session): RedirectResponse | string
+    {
+        $data = [];
+        $contentType = ContentType::query()->findOrFail($id);
+
+        if ($request->isPost()) {
+            $contentType->delete();
+            $session->flash('message', __('The Content Type was Successfully Deleted'));
+            return new RedirectResponse(route('content.admin.index'));
+        }
+
+        $data['contentType'] = $contentType;
+        $data['actionUrl'] = route('content.admin.delete', ['id' => $id]);
+
+        return $this->render->render('johncms/content::admin/delete', ['data' => $data]);
+    }
 }

@@ -36,7 +36,11 @@
                             </button>
                             <div class="dropdown-menu">
                                 <a class="dropdown-item" href="/admin/news/edit_article//"><?= __('Edit') ?></a>
-                                <a class="dropdown-item" data-url="/admin/news/del_article//" data-bs-toggle="modal" data-bs-target=".ajax_modal"><?= __('Delete') ?></a>
+                                <a class="dropdown-item"
+                                   data-url="{{ route('content.admin.delete', ['id' => $contentType['id']]) }}"
+                                   data-bs-toggle="modal"
+                                   data-bs-target=".ajax_modal"
+                                ><?= __('Delete') ?></a>
                             </div>
                         </div>
                     </th>
