@@ -7,6 +7,7 @@ namespace Johncms\Content\Controllers\Admin;
 use Johncms\Content\Forms\ContentTypeForm;
 use Johncms\Content\Models\ContentType;
 use Johncms\Content\Resources\ContentTypeResource;
+use Johncms\Content\Services\ContentTypeService;
 use Johncms\Controller\BaseAdminController;
 use Johncms\Exceptions\ValidationException;
 use Johncms\Http\Request;
@@ -60,13 +61,13 @@ class ContentTypesController extends BaseAdminController
         ]);
     }
 
-    public function delete(int $id, Request $request, Session $session): RedirectResponse | string
+    public function delete(int $id, Request $request, Session $session, ContentTypeService $contentTypeService): RedirectResponse | string
     {
         $data = [];
         $contentType = ContentType::query()->findOrFail($id);
 
         if ($request->isPost()) {
-            $contentType->delete();
+            $contentTypeService->delete($contentType);
             $session->flash('message', __('The Content Type was Successfully Deleted'));
             return new RedirectResponse(route('content.admin.index'));
         }

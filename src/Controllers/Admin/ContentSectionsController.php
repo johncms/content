@@ -57,7 +57,7 @@ class ContentSectionsController extends BaseAdminController
                 // TODO: Refactoring
                 $values['content_type_id'] = $type;
                 if ($sectionId > 0) {
-                    $values['parent'] = $type;
+                    $values['parent'] = $sectionId;
                 }
                 ContentSection::query()->create($values);
                 $session->flash('message', __('The Section was Successfully Created'));
