@@ -77,7 +77,7 @@ class ContentSectionsController extends BaseAdminController
         ]);
     }
 
-    public function delete(int $id, Request $request, Session $session): RedirectResponse | string
+    public function delete(int $type, int $id, Request $request, Session $session): RedirectResponse | string
     {
         $data = [];
         $contentSection = ContentSection::query()->findOrFail($id);
@@ -85,11 +85,11 @@ class ContentSectionsController extends BaseAdminController
         if ($request->isPost()) {
             $contentSection->delete();
             $session->flash('message', __('The Section was Successfully Deleted'));
-            return new RedirectResponse(route('content.admin.index'));
+            return new RedirectResponse(route('content.admin.sections', ['type' => $type]));
         }
 
         $data['elementName'] = $contentSection->name;
-        $data['actionUrl'] = route('content.admin.sections.delete', ['id' => $id]);
+        $data['actionUrl'] = route('content.admin.sections.delete', ['id' => $id, 'type' => $type]);
 
         return $this->render->render('johncms/content::admin/delete', ['data' => $data]);
     }

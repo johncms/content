@@ -37,7 +37,7 @@
                             <div class="dropdown-menu">
                                 <a class="dropdown-item" href="/admin/news/edit_article//"><?= __('Edit') ?></a>
                                 <a class="dropdown-item"
-                                   data-url="{{ route('content.admin.delete', ['id' => $section['id']]) }}"
+                                   data-url="{{ $section['deleteUrl'] }}"
                                    data-bs-toggle="modal"
                                    data-bs-target=".ajax_modal"
                                 ><?= __('Delete') ?></a>
