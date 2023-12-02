@@ -13,7 +13,7 @@ use Johncms\Http\Request;
 use Johncms\Http\Response\RedirectResponse;
 use Johncms\Http\Session;
 
-class ContentAdminController extends BaseAdminController
+class ContentTypesController extends BaseAdminController
 {
     protected string $moduleName = 'johncms/content';
 
@@ -36,7 +36,7 @@ class ContentAdminController extends BaseAdminController
         ]);
     }
 
-    public function createContentType(Request $request, Session $session, ContentTypeForm $form): string | RedirectResponse
+    public function create(Request $request, Session $session, ContentTypeForm $form): string | RedirectResponse
     {
         if ($request->isPost()) {
             try {
@@ -71,7 +71,7 @@ class ContentAdminController extends BaseAdminController
             return new RedirectResponse(route('content.admin.index'));
         }
 
-        $data['contentType'] = $contentType;
+        $data['elementName'] = $contentType->name;
         $data['actionUrl'] = route('content.admin.delete', ['id' => $id]);
 
         return $this->render->render('johncms/content::admin/delete', ['data' => $data]);

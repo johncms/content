@@ -15,10 +15,11 @@ class ContentTypeResource extends AbstractResource
     public function toArray(): array
     {
         return [
-            'id'   => $this->id,
-            'name' => $this->name,
-            'code' => $this->code,
-            'url'  => '/', // TODO: Change url
+            'id'      => $this->id,
+            'name'    => $this->name,
+            'code'    => $this->code,
+            'url'     => route('content.admin.sections', ['type' => $this->id]),
+            'editUrl' => route('content.admin.sections', ['type' => $this->id]),
         ];
     }
 }
