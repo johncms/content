@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Johncms\Content\Controllers\Admin;
 
+use Illuminate\Database\Eloquent\Builder;
 use Johncms\Content\Forms\ContentSectionForm;
 use Johncms\Content\Models\ContentSection;
 use Johncms\Content\Resources\ContentSectionResource;
@@ -24,20 +25,30 @@ class ContentSectionsController extends BaseAdminController
         $this->metaTagManager->setAll(__('Content'));
     }
 
-    public function index(int $type, Session $session): string
+    public function index(int $type, ?int $sectionId, Session $session): string
     {
-        $contentSections = ContentSection::query()->where('content_type_id', $type)->get();
+        $contentSections = ContentSection::query()
+            ->when($sectionId > 0, function (Builder $query) use ($sectionId) {
+                $query->where('parent', $sectionId);
+            })
+            ->when(! $sectionId, function (Builder $query) {
+                $query->whereNull('parent');
+            })
+            ->where('content_type_id', $type)
+            ->get();
 
         return $this->render->render('johncms/content::admin/sections', [
             'data' => [
-                'typeId'       => $type,
-                'message'      => $session->getFlash('message'),
-                'contentTypes' => ContentSectionResource::createFromCollection($contentSections)->toArray(),
+                'typeId'           => $type,
+                'sectionId'        => $sectionId,
+                'createSectionUrl' => route('content.admin.sections.create', ['sectionId' => $sectionId, 'type' => $type]),
+                'message'          => $session->getFlash('message'),
+                'sections'         => ContentSectionResource::createFromCollection($contentSections)->toArray(),
             ],
         ]);
     }
 
-    public function create(int $type, Request $request, Session $session, ContentSectionForm $form): string | RedirectResponse
+    public function create(int $type, ?int $sectionId, Request $request, Session $session, ContentSectionForm $form): string | RedirectResponse
     {
         if ($request->isPost()) {
             try {
@@ -45,11 +56,14 @@ class ContentSectionsController extends BaseAdminController
                 $values = $form->getRequestValues();
                 // TODO: Refactoring
                 $values['content_type_id'] = $type;
+                if ($sectionId > 0) {
+                    $values['parent'] = $type;
+                }
                 ContentSection::query()->create($values);
                 $session->flash('message', __('The Section was Successfully Created'));
                 return new RedirectResponse(route('content.admin.sections', ['type' => $type]));
             } catch (ValidationException $validationException) {
-                return (new RedirectResponse(route('content.admin.sections.create', ['type' => $type])))
+                return (new RedirectResponse(route('content.admin.sections.create', ['sectionId' => $sectionId, 'type' => $type])))
                     ->withPost()
                     ->withValidationErrors($validationException->getErrors());
             }
@@ -58,7 +72,7 @@ class ContentSectionsController extends BaseAdminController
         return $this->render->render('johncms/content::admin/create_section_form', [
             'formFields'       => $form->getFormFields(),
             'validationErrors' => $form->getValidationErrors(),
-            'storeUrl'         => route('content.admin.sections.create', ['type' => $type]),
+            'storeUrl'         => route('content.admin.sections.create', ['sectionId' => $sectionId, 'type' => $type]),
             'listUrl'          => route('content.admin.index'),
         ]);
     }

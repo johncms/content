@@ -11,7 +11,7 @@
     @endif
 
     <div class="mb-3">
-        <a href="{{ route('content.admin.sections.create', ['type' => $data['typeId']]) }}" class="btn btn-primary">Create Section</a>
+        <a href="{{ $data['createSectionUrl'] }}" class="btn btn-primary">Create Section</a>
     </div>
 
     <div>
@@ -25,7 +25,7 @@
             </tr>
             </thead>
             <tbody>
-            @forelse($data['contentTypes'] as $contentType)
+            @forelse($data['sections'] as $section)
                 <tr>
                     <th scope="row" style="width: 40px;" class="border-end-0">
                         <div class="dropdown">
@@ -37,7 +37,7 @@
                             <div class="dropdown-menu">
                                 <a class="dropdown-item" href="/admin/news/edit_article//"><?= __('Edit') ?></a>
                                 <a class="dropdown-item"
-                                   data-url="{{ route('content.admin.delete', ['id' => $contentType['id']]) }}"
+                                   data-url="{{ route('content.admin.delete', ['id' => $section['id']]) }}"
                                    data-bs-toggle="modal"
                                    data-bs-target=".ajax_modal"
                                 ><?= __('Delete') ?></a>
@@ -45,13 +45,13 @@
                         </div>
                     </th>
                     <th scope="row" class="border-start-0">
-                        <a href="/admin/news//edit_article//">{{ $contentType['id'] }}</a>
+                        <a href="{{ $section['url'] }}">{{ $section['id'] }}</a>
                     </th>
                     <td data-title="<?= __('Name') ?>">
-                        <a href="/admin/news/edit_article//">{{ $contentType['name'] }}</a>
+                        <a href="{{ $section['url'] }}">{{ $section['name'] }}</a>
                     </td>
                     <td data-title="<?= __('Code') ?>">
-                        <a href="/admin/news/edit_article//">{{ $contentType['code'] }}</a>
+                        <a href="{{ $section['url'] }}">{{ $section['code'] }}</a>
                     </td>
                 </tr>
             @empty

@@ -17,10 +17,10 @@ return function (Router $router) {
         $route->post('/types/delete/{id:number}[/]', [ContentTypesController::class, 'delete']);
 
         // Sections
-        $route->get('/{type:number}[/]', [ContentSectionsController::class, 'index'])->setName('content.admin.sections');
-        $route->get('/{type:number}/sections/create[/]', [ContentSectionsController::class, 'create'])->setName('content.admin.sections.create');
-        $route->post('/{type:number}/sections/create[/]', [ContentSectionsController::class, 'create']);
-        $route->get('/{type:number}/sections/delete/{id:number}[/]', [ContentSectionsController::class, 'delete'])->setName('content.admin.sections.delete');
-        $route->post('/{type:number}/sections/delete/{id:number}[/]', [ContentSectionsController::class, 'delete']);
+        $route->get('/{type:number}[/[{sectionId:number}[/]]]', [ContentSectionsController::class, 'index'])->setName('content.admin.sections');
+        $route->get('/sections/create/{type:number}[/[{sectionId:number}[/]]]', [ContentSectionsController::class, 'create'])->setName('content.admin.sections.create');
+        $route->post('/sections/create/{type:number}[/[{sectionId:number}[/]]]', [ContentSectionsController::class, 'create']);
+        $route->get('/sections/delete/{type:number}/{id:number}[/]', [ContentSectionsController::class, 'delete'])->setName('content.admin.sections.delete');
+        $route->post('/sections/delete/{type:number}/{id:number}[/]', [ContentSectionsController::class, 'delete']);
     });
 };

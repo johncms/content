@@ -18,7 +18,7 @@ class ContentSectionResource extends AbstractResource
             'id'   => $this->id,
             'name' => $this->name,
             'code' => $this->code,
-            'url'  => '/', // TODO: Change url
+            'url'  => route('content.admin.sections', ['sectionId' => $this->id, 'type' => $this->content_type_id])
         ];
     }
 }
