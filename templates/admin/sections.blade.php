@@ -22,10 +22,11 @@
                 <th scope="col" class="border-start-0" style="max-width: 1px;">#</th>
                 <th scope="col"><?= __('Name') ?></th>
                 <th scope="col"><?= __('Code') ?></th>
+                <th scope="col"><?= __('Type') ?></th>
             </tr>
             </thead>
             <tbody>
-            @forelse($data['sections'] as $section)
+            @foreach($data['sections'] as $section)
                 <tr>
                     <th scope="row" style="width: 40px;" class="border-end-0">
                         <div class="dropdown">
@@ -53,12 +54,47 @@
                     <td data-title="<?= __('Code') ?>">
                         <a href="{{ $section['url'] }}">{{ $section['code'] }}</a>
                     </td>
+                    <td data-title="<?= __('Type') ?>">{{ __('Section')  }}</td>
                 </tr>
-            @empty
+            @endforeach
+
+            @foreach($data['elements']['data'] as $element)
+                <tr>
+                    <th scope="row" style="width: 40px;" class="border-end-0">
+                        <div class="dropdown">
+                            <button class="btn btn-sm" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <svg class="menu-icon">
+                                    <use xlink:href="{{ asset('icons/sprite.svg') }}#menu"/>
+                                </svg>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/admin/news/edit_article//"><?= __('Edit') ?></a>
+                                <a class="dropdown-item"
+                                   data-url="{{ $element['deleteUrl'] }}"
+                                   data-bs-toggle="modal"
+                                   data-bs-target=".ajax_modal"
+                                ><?= __('Delete') ?></a>
+                            </div>
+                        </div>
+                    </th>
+                    <th scope="row" class="border-start-0">
+                        <a href="{{ $element['url'] }}">{{ $element['id'] }}</a>
+                    </th>
+                    <td data-title="<?= __('Name') ?>">
+                        <a href="{{ $element['url'] }}">{{ $element['name'] }}</a>
+                    </td>
+                    <td data-title="<?= __('Code') ?>">
+                        <a href="{{ $element['url'] }}">{{ $element['code'] }}</a>
+                    </td>
+                    <td data-title="<?= __('Type') ?>">{{ __('Element')  }}</td>
+                </tr>
+            @endforeach
+
+            @if(empty($data['sections']) && empty($data['elements']['data']))
                 <tr>
                     <td colspan="7" class="text-center fw-bold"><?= __('The list is empty') ?></td>
                 </tr>
-            @endforelse
+            @endif
             </tbody>
         </table>
     </div>

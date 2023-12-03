@@ -4,19 +4,15 @@ declare(strict_types=1);
 
 namespace Johncms\Content\Controllers\Admin;
 
-use Illuminate\Database\Eloquent\Builder;
 use Johncms\Content\Forms\ContentSectionForm;
-use Johncms\Content\Models\ContentElement;
 use Johncms\Content\Models\ContentSection;
-use Johncms\Content\Resources\ContentElementResource;
-use Johncms\Content\Resources\ContentSectionResource;
 use Johncms\Controller\BaseAdminController;
 use Johncms\Exceptions\ValidationException;
 use Johncms\Http\Request;
 use Johncms\Http\Response\RedirectResponse;
 use Johncms\Http\Session;
 
-class ContentSectionsController extends BaseAdminController
+class ContentElementsController extends BaseAdminController
 {
     protected string $moduleName = 'johncms/content';
 
@@ -25,40 +21,6 @@ class ContentSectionsController extends BaseAdminController
         parent::__construct();
         $this->navChain->add(__('Content'), route('content.admin.index'));
         $this->metaTagManager->setAll(__('Content'));
-    }
-
-    public function index(int $type, ?int $sectionId, Session $session): string
-    {
-        $contentSections = ContentSection::query()
-            ->when($sectionId > 0, function (Builder $query) use ($sectionId) {
-                $query->where('parent', $sectionId);
-            })
-            ->when(! $sectionId, function (Builder $query) {
-                $query->whereNull('parent');
-            })
-            ->where('content_type_id', $type)
-            ->get();
-
-        $contentElements = ContentElement::query()
-            ->when($sectionId > 0, function (Builder $query) use ($sectionId) {
-                $query->where('section_id', $sectionId);
-            })
-            ->when(! $sectionId, function (Builder $query) {
-                $query->whereNull('section_id');
-            })
-            ->paginate();
-
-        return $this->render->render('johncms/content::admin/sections', [
-            'data' => [
-                'typeId'           => $type,
-                'sectionId'        => $sectionId,
-                'createSectionUrl' => route('content.admin.sections.create', ['sectionId' => $sectionId, 'type' => $type]),
-                'message'          => $session->getFlash('message'),
-                'sections'         => ContentSectionResource::createFromCollection($contentSections)->toArray(),
-                'elements'         => ContentElementResource::createFromCollection($contentElements)->toArray(),
-                'pagination'       => $contentElements->render(),
-            ],
-        ]);
     }
 
     public function create(int $type, ?int $sectionId, Request $request, Session $session, ContentSectionForm $form): string | RedirectResponse
