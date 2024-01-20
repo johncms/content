@@ -34,6 +34,7 @@ class ContentElementsController extends BaseAdminController
                 if ($sectionId > 0) {
                     $values['parent'] = $sectionId;
                 }
+
                 ContentSection::query()->create($values);
                 $session->flash('message', __('The Section was Successfully Created'));
                 return new RedirectResponse(route('content.admin.sections', ['type' => $type]));
