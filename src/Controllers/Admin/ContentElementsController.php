@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Johncms\Content\Controllers\Admin;
 
-use Johncms\Content\Forms\ContentSectionForm;
+use Johncms\Content\Forms\ContentElementForm;
+use Johncms\Content\Models\ContentElement;
 use Johncms\Content\Models\ContentSection;
 use Johncms\Controller\BaseAdminController;
 use Johncms\Exceptions\ValidationException;
@@ -23,7 +24,7 @@ class ContentElementsController extends BaseAdminController
         $this->metaTagManager->setAll(__('Content'));
     }
 
-    public function create(int $type, ?int $sectionId, Request $request, Session $session, ContentSectionForm $form): string | RedirectResponse
+    public function create(int $type, ?int $sectionId, Request $request, Session $session, ContentElementForm $form): string | RedirectResponse
     {
         if ($request->isPost()) {
             try {
@@ -32,23 +33,23 @@ class ContentElementsController extends BaseAdminController
                 // TODO: Refactoring
                 $values['content_type_id'] = $type;
                 if ($sectionId > 0) {
-                    $values['parent'] = $sectionId;
+                    $values['section_id'] = $sectionId;
                 }
 
-                ContentSection::query()->create($values);
-                $session->flash('message', __('The Section was Successfully Created'));
-                return new RedirectResponse(route('content.admin.sections', ['type' => $type]));
+                ContentElement::query()->create($values);
+                $session->flash('message', __('The Element was Successfully Created'));
+                return new RedirectResponse(route('content.admin.sections', ['sectionId' => $sectionId, 'type' => $type]));
             } catch (ValidationException $validationException) {
-                return (new RedirectResponse(route('content.admin.sections.create', ['sectionId' => $sectionId, 'type' => $type])))
+                return (new RedirectResponse(route('content.admin.elements.create', ['sectionId' => $sectionId, 'type' => $type])))
                     ->withPost()
                     ->withValidationErrors($validationException->getErrors());
             }
         }
 
-        return $this->render->render('johncms/content::admin/create_section_form', [
+        return $this->render->render('johncms/content::admin/create_element_form', [
             'formFields'       => $form->getFormFields(),
             'validationErrors' => $form->getValidationErrors(),
-            'storeUrl'         => route('content.admin.sections.create', ['sectionId' => $sectionId, 'type' => $type]),
+            'storeUrl'         => route('content.admin.elements.create', ['sectionId' => $sectionId, 'type' => $type]),
             'listUrl'          => route('content.admin.index'),
         ]);
     }

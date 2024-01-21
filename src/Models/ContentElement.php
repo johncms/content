@@ -15,5 +15,6 @@ class ContentElement extends Model
         'section_id',
         'name',
         'code',
+        'detail_text',
     ];
 }

@@ -11,7 +11,8 @@
     @endif
 
     <div class="mb-3">
-        <a href="{{ $data['createSectionUrl'] }}" class="btn btn-primary">Create Section</a>
+        <a href="{{ $data['createSectionUrl'] }}" class="btn btn-primary">{{ __('Create Section') }}</a>
+        <a href="{{ $data['createElementUrl'] }}" class="btn btn-primary">{{ __('Create Element') }}</a>
     </div>
 
     <div>
@@ -68,7 +69,7 @@
                                 </svg>
                             </button>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item" href="/admin/news/edit_article//"><?= __('Edit') ?></a>
+                                <a class="dropdown-item" href="{{ $element['url'] }}"><?= __('Edit') ?></a>
                                 <a class="dropdown-item"
                                    data-url="{{ $element['deleteUrl'] }}"
                                    data-bs-toggle="modal"

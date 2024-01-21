@@ -53,6 +53,7 @@ class ContentSectionsController extends BaseAdminController
                 'typeId'           => $type,
                 'sectionId'        => $sectionId,
                 'createSectionUrl' => route('content.admin.sections.create', ['sectionId' => $sectionId, 'type' => $type]),
+                'createElementUrl' => route('content.admin.elements.create', ['sectionId' => $sectionId, 'type' => $type]),
                 'message'          => $session->getFlash('message'),
                 'sections'         => ContentSectionResource::createFromCollection($contentSections)->toArray(),
                 'elements'         => ContentElementResource::createFromCollection($contentElements)->toArray(),

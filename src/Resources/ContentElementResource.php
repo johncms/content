@@ -21,7 +21,11 @@ class ContentElementResource extends AbstractResource
 
             // TODO: Change url
             'deleteUrl' => route('content.admin.sections.delete', ['id' => $this->id, 'type' => $this->content_type_id]),
-            'url'       => route('content.admin.sections', ['sectionId' => $this->id, 'type' => $this->content_type_id]),
+            'url'       => route('content.admin.elements', [
+                'elementId' => $this->id,
+                'sectionId' => $this->section_id,
+                'type'      => $this->content_type_id,
+            ]),
         ];
     }
 }

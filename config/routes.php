@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Johncms\Content\Controllers\Admin\ContentElementsController;
 use Johncms\Content\Controllers\Admin\ContentSectionsController;
 use Johncms\Content\Controllers\Admin\ContentTypesController;
 use League\Route\RouteGroup;
@@ -22,5 +23,12 @@ return function (Router $router) {
         $route->post('/sections/create/{type:number}[/[{sectionId:number}[/]]]', [ContentSectionsController::class, 'create']);
         $route->get('/sections/delete/{type:number}/{id:number}[/]', [ContentSectionsController::class, 'delete'])->setName('content.admin.sections.delete');
         $route->post('/sections/delete/{type:number}/{id:number}[/]', [ContentSectionsController::class, 'delete']);
+
+        // Elements
+        $route->get('/{type:number}/{sectionId:number}/{elementId:number}[/]', [ContentSectionsController::class, 'index'])->setName('content.admin.elements');
+        $route->get('/elements/create/{type:number}[/[{sectionId:number}[/]]]', [ContentElementsController::class, 'create'])->setName('content.admin.elements.create');
+        $route->post('/elements/create/{type:number}[/[{sectionId:number}[/]]]', [ContentElementsController::class, 'create']);
+
+
     });
 };
