@@ -6,7 +6,6 @@ namespace Johncms\Content\Controllers\Admin;
 
 use Johncms\Content\Forms\ContentElementForm;
 use Johncms\Content\Models\ContentElement;
-use Johncms\Content\Models\ContentSection;
 use Johncms\Controller\BaseAdminController;
 use Johncms\Exceptions\ValidationException;
 use Johncms\Http\Request;
@@ -92,19 +91,19 @@ class ContentElementsController extends BaseAdminController
         ]);
     }
 
-    public function delete(int $type, int $id, Request $request, Session $session): RedirectResponse | string
+    public function delete(int $id, Request $request, Session $session): RedirectResponse | string
     {
         $data = [];
-        $contentSection = ContentSection::query()->findOrFail($id);
+        $element = ContentElement::query()->findOrFail($id);
 
         if ($request->isPost()) {
-            $contentSection->delete();
-            $session->flash('message', __('The Section was Successfully Deleted'));
-            return new RedirectResponse(route('content.admin.sections', ['type' => $type]));
+            $element->delete();
+            $session->flash('message', __('The Element was Successfully Deleted'));
+            return new RedirectResponse(route('content.admin.sections', ['sectionId' => $element->section_id, 'type' => $element->content_type_id]));
         }
 
-        $data['elementName'] = $contentSection->name;
-        $data['actionUrl'] = route('content.admin.sections.delete', ['id' => $id, 'type' => $type]);
+        $data['elementName'] = $element->name;
+        $data['actionUrl'] = route('content.admin.elements.delete', ['id' => $id]);
 
         return $this->render->render('johncms/content::admin/delete', ['data' => $data]);
     }

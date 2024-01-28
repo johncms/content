@@ -30,6 +30,8 @@ return function (Router $router) {
         $route->post('/elements/create/{type:number}[/[{sectionId:number}[/]]]', [ContentElementsController::class, 'create']);
         $route->get('/elements/edit/{elementId:number}[/]', [ContentElementsController::class, 'edit'])->setName('content.admin.elements.edit');
         $route->post('/elements/edit/{elementId:number}[/]', [ContentElementsController::class, 'edit']);
+        $route->get('/elements/delete/{id:number}[/]', [ContentElementsController::class, 'delete'])->setName('content.admin.elements.delete');
+        $route->post('/elements/delete/{id:number}[/]', [ContentElementsController::class, 'delete']);
 
 
     });
