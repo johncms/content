@@ -25,6 +25,8 @@ return function (Router $router) {
         $route->post('/sections/create/{type:number}[/[{sectionId:number}[/]]]', [ContentSectionsController::class, 'create']);
         $route->get('/sections/delete/{type:number}/{id:number}[/]', [ContentSectionsController::class, 'delete'])->setName('content.admin.sections.delete');
         $route->post('/sections/delete/{type:number}/{id:number}[/]', [ContentSectionsController::class, 'delete']);
+        $route->get('/sections/edit/{id:number}[/]', [ContentSectionsController::class, 'edit'])->setName('content.admin.sections.edit');
+        $route->post('/sections/edit/{id:number}[/]', [ContentSectionsController::class, 'edit']);
 
         // Elements
         $route->get('/{type:number}/{sectionId:number}/{elementId:number}[/]', [ContentSectionsController::class, 'index'])->setName('content.admin.elements');

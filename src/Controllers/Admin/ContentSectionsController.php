@@ -83,11 +83,44 @@ class ContentSectionsController extends BaseAdminController
             }
         }
 
-        return $this->render->render('johncms/content::admin/create_section_form', [
+        return $this->render->render('johncms/content::admin/content_section_form', [
             'formFields'       => $form->getFormFields(),
             'validationErrors' => $form->getValidationErrors(),
             'storeUrl'         => route('content.admin.sections.create', ['sectionId' => $sectionId, 'type' => $type]),
-            'listUrl'          => route('content.admin.index'),
+            'listUrl'          => route('content.admin.sections', ['sectionId' => $sectionId, 'type' => $type]),
+        ]);
+    }
+
+    public function edit(int $id, Request $request, Session $session, ContentSectionForm $form): string | RedirectResponse
+    {
+        $contentSection = ContentSection::query()->findOrFail($id);
+
+        $form->setValues(
+            [
+                'name' => $contentSection->name,
+                'code' => $contentSection->code,
+            ]
+        );
+
+        if ($request->isPost()) {
+            try {
+                $form->validate();
+                $values = $form->getRequestValues();
+                $contentSection->update($values);
+                $session->flash('message', __('The Section was Successfully Updated'));
+                return new RedirectResponse(route('content.admin.sections', ['type' => $contentSection->content_type_id]));
+            } catch (ValidationException $validationException) {
+                return (new RedirectResponse(route('content.admin.sections.edit', ['id' => $id])))
+                    ->withPost()
+                    ->withValidationErrors($validationException->getErrors());
+            }
+        }
+
+        return $this->render->render('johncms/content::admin/content_section_form', [
+            'formFields'       => $form->getFormFields(),
+            'validationErrors' => $form->getValidationErrors(),
+            'storeUrl'         => route('content.admin.sections.edit', ['id' => $id]),
+            'listUrl'          => route('content.admin.sections', ['sectionId' => $contentSection->parent, 'type' => $contentSection->content_type_id]),
         ]);
     }
 

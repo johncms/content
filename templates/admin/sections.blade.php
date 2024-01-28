@@ -37,7 +37,7 @@
                                 </svg>
                             </button>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item" href="/admin/news/edit_article//"><?= __('Edit') ?></a>
+                                <a class="dropdown-item" href="{{ $section['editUrl'] }}"><?= __('Edit') ?></a>
                                 <a class="dropdown-item"
                                    data-url="{{ $section['deleteUrl'] }}"
                                    data-bs-toggle="modal"
