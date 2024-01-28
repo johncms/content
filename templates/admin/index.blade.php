@@ -11,7 +11,7 @@
     @endif
 
     <div class="mb-3">
-        <a href="{{ route('content.admin.createContentType') }}" class="btn btn-primary">Create Type</a>
+        <a href="{{ route('content.admin.type.create') }}" class="btn btn-primary">Create Type</a>
     </div>
 
     <div>
@@ -37,7 +37,7 @@
                             <div class="dropdown-menu">
                                 <a class="dropdown-item" href="{{ $contentType['editUrl'] }}">{{ __('Edit') }}</a>
                                 <a class="dropdown-item"
-                                   data-url="{{ route('content.admin.delete', ['id' => $contentType['id']]) }}"
+                                   data-url="{{ $contentType['deleteUrl'] }}"
                                    data-bs-toggle="modal"
                                    data-bs-target=".ajax_modal"
                                 >{{ __('Delete') }}</a>

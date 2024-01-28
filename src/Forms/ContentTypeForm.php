@@ -23,6 +23,7 @@ class ContentTypeForm extends AbstractForm
             ->setLabel(__('Code'))
             ->setPlaceholder(p__('placeholder', 'Enter the Code of the Content Type'))
             ->setNameAndId('code')
+            ->setValue($this->getValue('code'))
             ->setValidationRules(['NotEmpty']);
 
         return $fields;

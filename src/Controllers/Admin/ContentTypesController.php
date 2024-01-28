@@ -47,16 +47,49 @@ class ContentTypesController extends BaseAdminController
                 $session->flash('message', __('The Content Type was Successfully Created'));
                 return new RedirectResponse(route('content.admin.index'));
             } catch (ValidationException $validationException) {
-                return (new RedirectResponse(route('content.admin.createContentType')))
+                return (new RedirectResponse(route('content.admin.type.create')))
                     ->withPost()
                     ->withValidationErrors($validationException->getErrors());
             }
         }
 
-        return $this->render->render('johncms/content::admin/create_type_form', [
+        return $this->render->render('johncms/content::admin/content_type_form', [
             'formFields'       => $form->getFormFields(),
             'validationErrors' => $form->getValidationErrors(),
-            'storeUrl'         => route('content.admin.createContentType'),
+            'storeUrl'         => route('content.admin.type.create'),
+            'listUrl'          => route('content.admin.index'),
+        ]);
+    }
+
+    public function edit(int $id, Request $request, Session $session, ContentTypeForm $form): string | RedirectResponse
+    {
+        $contentType = ContentType::query()->findOrFail($id);
+
+        $form->setValues(
+            [
+                'name' => $contentType->name,
+                'code' => $contentType->code,
+            ]
+        );
+
+        if ($request->isPost()) {
+            try {
+                $form->validate();
+                $values = $form->getRequestValues();
+                $contentType->update($values);
+                $session->flash('message', __('The Content Type was Successfully Updated'));
+                return new RedirectResponse(route('content.admin.index'));
+            } catch (ValidationException $validationException) {
+                return (new RedirectResponse(route('content.admin.type.edit', ['id' => $id])))
+                    ->withPost()
+                    ->withValidationErrors($validationException->getErrors());
+            }
+        }
+
+        return $this->render->render('johncms/content::admin/content_type_form', [
+            'formFields'       => $form->getFormFields(),
+            'validationErrors' => $form->getValidationErrors(),
+            'storeUrl'         => route('content.admin.type.edit', ['id' => $id]),
             'listUrl'          => route('content.admin.index'),
         ]);
     }
@@ -73,7 +106,7 @@ class ContentTypesController extends BaseAdminController
         }
 
         $data['elementName'] = $contentType->name;
-        $data['actionUrl'] = route('content.admin.delete', ['id' => $id]);
+        $data['actionUrl'] = route('content.admin.type.delete', ['id' => $id]);
 
         return $this->render->render('johncms/content::admin/delete', ['data' => $data]);
     }

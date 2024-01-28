@@ -31,8 +31,7 @@ class ContentElementForm extends AbstractForm
             ->setLabel(__('Detail Text'))
             ->setPlaceholder(p__('placeholder', 'Enter the Detail Text'))
             ->setNameAndId('detail_text')
-            ->setValue($this->getValue('detail_text'))
-            ->setValidationRules(['NotEmpty']);
+            ->setValue($this->getValue('detail_text'));
 
         return $fields;
     }

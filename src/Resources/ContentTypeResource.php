@@ -19,7 +19,8 @@ class ContentTypeResource extends AbstractResource
             'name'    => $this->name,
             'code'    => $this->code,
             'url'     => route('content.admin.sections', ['type' => $this->id]),
-            'editUrl' => route('content.admin.sections', ['type' => $this->id]),
+            'editUrl' => route('content.admin.type.edit', ['id' => $this->id]),
+            'deleteUrl' => route('content.admin.type.delete', ['id' => $this->id]),
         ];
     }
 }
