@@ -64,15 +64,19 @@ class ContentSectionsController extends BaseAdminController
 
     public function create(int $type, ?int $sectionId, Request $request, Session $session, ContentSectionForm $form): string | RedirectResponse
     {
+        $form->setValues(
+            [
+                'content_type_id' => $type,
+                'parent'          => $sectionId,
+            ]
+        );
+
         if ($request->isPost()) {
             try {
                 $form->validate();
                 $values = $form->getRequestValues();
                 // TODO: Refactoring
                 $values['content_type_id'] = $type;
-                if ($sectionId > 0) {
-                    $values['parent'] = $sectionId;
-                }
                 ContentSection::query()->create($values);
                 $session->flash('message', __('The Section was Successfully Created'));
                 return new RedirectResponse(route('content.admin.sections', ['type' => $type]));
@@ -97,8 +101,11 @@ class ContentSectionsController extends BaseAdminController
 
         $form->setValues(
             [
-                'name' => $contentSection->name,
-                'code' => $contentSection->code,
+                'id'              => $contentSection->id,
+                'name'            => $contentSection->name,
+                'code'            => $contentSection->code,
+                'content_type_id' => $contentSection->content_type_id,
+                'parent'          => $contentSection->parent,
             ]
         );
 
