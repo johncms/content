@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Johncms\Content\Forms\ContentSectionForm;
 use Johncms\Content\Models\ContentElement;
 use Johncms\Content\Models\ContentSection;
+use Johncms\Content\Models\ContentType;
 use Johncms\Content\Resources\ContentElementResource;
 use Johncms\Content\Resources\ContentSectionResource;
 use Johncms\Content\Services\NavChainService;
@@ -32,6 +33,14 @@ class ContentSectionsController extends BaseAdminController
 
     public function index(int $type, ?int $sectionId): string
     {
+        $contentType = ContentType::query()->findOrFail($type);
+        if ($sectionId) {
+            $contentSection = ContentSection::query()->findOrFail($sectionId);
+            $this->metaTagManager->setAll($contentSection->name);
+        } else {
+            $this->metaTagManager->setAll($contentType->name);
+        }
+
         $this->breadcrumbs->setAdminBreadcrumbs($type, $sectionId);
 
         $contentSections = ContentSection::query()
@@ -70,6 +79,7 @@ class ContentSectionsController extends BaseAdminController
     public function create(int $type, ?int $sectionId, Request $request, ContentSectionForm $form): string | RedirectResponse
     {
         $this->breadcrumbs->setAdminBreadcrumbs($type, $sectionId);
+        $this->metaTagManager->setAll(__('Create Section'));
 
         $form->setValues(
             [
@@ -95,6 +105,7 @@ class ContentSectionsController extends BaseAdminController
         }
 
         return $this->render->render('johncms/content::admin/content_section_form', [
+            'formTitle'        => __('Create Section'),
             'formFields'       => $form->getFormFields(),
             'validationErrors' => $form->getValidationErrors(),
             'storeUrl'         => route('content.admin.sections.create', ['sectionId' => $sectionId, 'type' => $type]),
@@ -107,6 +118,7 @@ class ContentSectionsController extends BaseAdminController
         $contentSection = ContentSection::query()->findOrFail($id);
 
         $this->breadcrumbs->setAdminBreadcrumbs($contentSection->content_type_id, $id);
+        $this->metaTagManager->setAll(__('Edit Section'));
 
         $form->setValues(
             [
@@ -133,6 +145,7 @@ class ContentSectionsController extends BaseAdminController
         }
 
         return $this->render->render('johncms/content::admin/content_section_form', [
+            'formTitle'        => __('Edit Section'),
             'formFields'       => $form->getFormFields(),
             'validationErrors' => $form->getValidationErrors(),
             'storeUrl'         => route('content.admin.sections.edit', ['id' => $id]),

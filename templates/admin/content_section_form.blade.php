@@ -3,7 +3,7 @@
     <div class="row">
         <div class="col-md-6">
             <form method="post" class="mb-3" action="{{ $storeUrl }}">
-                <h4>{{ __('Create Section') }}</h4>
+                <h4>{{ $formTitle }}</h4>
 
                 @include('system::forms/simple_form', [
                     'fields' => $formFields,

@@ -29,6 +29,7 @@ class ContentElementsController extends BaseAdminController
     public function create(int $type, ?int $sectionId, Request $request, ContentElementForm $form): string | RedirectResponse
     {
         $this->breadcrumbs->setAdminBreadcrumbs($type, $sectionId);
+        $this->metaTagManager->setAll(__('Create Element'));
 
         if ($request->isPost()) {
             try {
@@ -50,7 +51,8 @@ class ContentElementsController extends BaseAdminController
             }
         }
 
-        return $this->render->render('johncms/content::admin/create_element_form', [
+        return $this->render->render('johncms/content::admin/content_element_form', [
+            'formTitle'        => __('Create Element'),
             'formFields'       => $form->getFormFields(),
             'validationErrors' => $form->getValidationErrors(),
             'storeUrl'         => route('content.admin.elements.create', ['sectionId' => $sectionId, 'type' => $type]),
@@ -63,6 +65,7 @@ class ContentElementsController extends BaseAdminController
         $element = ContentElement::query()->findOrFail($elementId);
 
         $this->breadcrumbs->setAdminBreadcrumbs($element->content_type_id, $element->section_id);
+        $this->metaTagManager->setAll(__('Edit Element'));
 
         // TODO: Refactoring
         $form->setValues(
@@ -90,7 +93,8 @@ class ContentElementsController extends BaseAdminController
             }
         }
 
-        return $this->render->render('johncms/content::admin/create_element_form', [
+        return $this->render->render('johncms/content::admin/content_element_form', [
+            'formTitle'        => __('Edit Element'),
             'formFields'       => $form->getFormFields(),
             'validationErrors' => $form->getValidationErrors(),
             'storeUrl'         => route('content.admin.elements.edit', ['elementId' => $elementId]),

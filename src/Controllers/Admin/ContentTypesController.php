@@ -14,6 +14,8 @@ use Johncms\Http\Request;
 use Johncms\Http\Response\RedirectResponse;
 use Johncms\Http\Session;
 
+use const _PHPStan_39fe102d2\__;
+
 class ContentTypesController extends BaseAdminController
 {
     protected string $moduleName = 'johncms/content';
@@ -40,6 +42,7 @@ class ContentTypesController extends BaseAdminController
 
     public function create(Request $request, ContentTypeForm $form): string | RedirectResponse
     {
+        $this->metaTagManager->setAll(__('Create Content Type'));
         if ($request->isPost()) {
             try {
                 $form->validate();
@@ -55,6 +58,7 @@ class ContentTypesController extends BaseAdminController
         }
 
         return $this->render->render('johncms/content::admin/content_type_form', [
+            'formTitle'        => __('Create Content Type'),
             'formFields'       => $form->getFormFields(),
             'validationErrors' => $form->getValidationErrors(),
             'storeUrl'         => route('content.admin.type.create'),
@@ -65,6 +69,7 @@ class ContentTypesController extends BaseAdminController
     public function edit(int $id, Request $request, ContentTypeForm $form): string | RedirectResponse
     {
         $contentType = ContentType::query()->findOrFail($id);
+        $this->metaTagManager->setAll(__('Edit Content Type'));
 
         $form->setValues(
             [
@@ -88,6 +93,7 @@ class ContentTypesController extends BaseAdminController
         }
 
         return $this->render->render('johncms/content::admin/content_type_form', [
+            'formTitle'        => __('Edit Content Type'),
             'formFields'       => $form->getFormFields(),
             'validationErrors' => $form->getValidationErrors(),
             'storeUrl'         => route('content.admin.type.edit', ['id' => $id]),
