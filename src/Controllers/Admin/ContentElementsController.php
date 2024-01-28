@@ -54,6 +54,44 @@ class ContentElementsController extends BaseAdminController
         ]);
     }
 
+    public function edit(int $elementId, Request $request, Session $session, ContentElementForm $form): string | RedirectResponse
+    {
+        $element = ContentElement::query()->findOrFail($elementId);
+
+        // TODO: Refactoring
+        $form->setValues(
+            [
+                'name'        => $element->name,
+                'code'        => $element->code,
+                'detail_text' => $element->detail_text,
+            ]
+        );
+
+        $form->buildForm();
+
+        if ($request->isPost()) {
+            try {
+                $form->validate();
+                $values = $form->getRequestValues();
+                $element->update($values);
+                $session->flash('message', __('The Element was Successfully Updated'));
+
+                return new RedirectResponse(route('content.admin.sections', ['sectionId' => $element->section_id, 'type' => $element->content_type_id]));
+            } catch (ValidationException $validationException) {
+                return (new RedirectResponse(route('content.admin.elements.edit', ['elementId' => $elementId])))
+                    ->withPost()
+                    ->withValidationErrors($validationException->getErrors());
+            }
+        }
+
+        return $this->render->render('johncms/content::admin/create_element_form', [
+            'formFields'       => $form->getFormFields(),
+            'validationErrors' => $form->getValidationErrors(),
+            'storeUrl'         => route('content.admin.elements.edit', ['elementId' => $elementId]),
+            'listUrl'          => route('content.admin.sections', ['sectionId' => $element->section_id, 'type' => $element->content_type_id]),
+        ]);
+    }
+
     public function delete(int $type, int $id, Request $request, Session $session): RedirectResponse | string
     {
         $data = [];

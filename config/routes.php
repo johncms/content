@@ -28,6 +28,8 @@ return function (Router $router) {
         $route->get('/{type:number}/{sectionId:number}/{elementId:number}[/]', [ContentSectionsController::class, 'index'])->setName('content.admin.elements');
         $route->get('/elements/create/{type:number}[/[{sectionId:number}[/]]]', [ContentElementsController::class, 'create'])->setName('content.admin.elements.create');
         $route->post('/elements/create/{type:number}[/[{sectionId:number}[/]]]', [ContentElementsController::class, 'create']);
+        $route->get('/elements/edit/{elementId:number}[/]', [ContentElementsController::class, 'edit'])->setName('content.admin.elements.edit');
+        $route->post('/elements/edit/{elementId:number}[/]', [ContentElementsController::class, 'edit']);
 
 
     });
