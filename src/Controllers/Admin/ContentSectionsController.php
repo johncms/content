@@ -10,6 +10,7 @@ use Johncms\Content\Models\ContentElement;
 use Johncms\Content\Models\ContentSection;
 use Johncms\Content\Resources\ContentElementResource;
 use Johncms\Content\Resources\ContentSectionResource;
+use Johncms\Content\Services\NavChainService;
 use Johncms\Controller\BaseAdminController;
 use Johncms\Exceptions\ValidationException;
 use Johncms\Http\Request;
@@ -20,15 +21,19 @@ class ContentSectionsController extends BaseAdminController
 {
     protected string $moduleName = 'johncms/content';
 
-    public function __construct()
-    {
+    public function __construct(
+        private readonly NavChainService $breadcrumbs,
+        private readonly Session $session
+    ) {
         parent::__construct();
         $this->navChain->add(__('Content'), route('content.admin.index'));
         $this->metaTagManager->setAll(__('Content'));
     }
 
-    public function index(int $type, ?int $sectionId, Session $session): string
+    public function index(int $type, ?int $sectionId): string
     {
+        $this->breadcrumbs->setAdminBreadcrumbs($type, $sectionId);
+
         $contentSections = ContentSection::query()
             ->when($sectionId > 0, function (Builder $query) use ($sectionId) {
                 $query->where('parent', $sectionId);
@@ -54,7 +59,7 @@ class ContentSectionsController extends BaseAdminController
                 'sectionId'        => $sectionId,
                 'createSectionUrl' => route('content.admin.sections.create', ['sectionId' => $sectionId, 'type' => $type]),
                 'createElementUrl' => route('content.admin.elements.create', ['sectionId' => $sectionId, 'type' => $type]),
-                'message'          => $session->getFlash('message'),
+                'message'          => $this->session->getFlash('message'),
                 'sections'         => ContentSectionResource::createFromCollection($contentSections)->toArray(),
                 'elements'         => ContentElementResource::createFromCollection($contentElements)->toArray(),
                 'pagination'       => $contentElements->render(),
@@ -62,8 +67,10 @@ class ContentSectionsController extends BaseAdminController
         ]);
     }
 
-    public function create(int $type, ?int $sectionId, Request $request, Session $session, ContentSectionForm $form): string | RedirectResponse
+    public function create(int $type, ?int $sectionId, Request $request, ContentSectionForm $form): string | RedirectResponse
     {
+        $this->breadcrumbs->setAdminBreadcrumbs($type, $sectionId);
+
         $form->setValues(
             [
                 'content_type_id' => $type,
@@ -78,7 +85,7 @@ class ContentSectionsController extends BaseAdminController
                 // TODO: Refactoring
                 $values['content_type_id'] = $type;
                 ContentSection::query()->create($values);
-                $session->flash('message', __('The Section was Successfully Created'));
+                $this->session->flash('message', __('The Section was Successfully Created'));
                 return new RedirectResponse(route('content.admin.sections', ['type' => $type]));
             } catch (ValidationException $validationException) {
                 return (new RedirectResponse(route('content.admin.sections.create', ['sectionId' => $sectionId, 'type' => $type])))
@@ -95,9 +102,11 @@ class ContentSectionsController extends BaseAdminController
         ]);
     }
 
-    public function edit(int $id, Request $request, Session $session, ContentSectionForm $form): string | RedirectResponse
+    public function edit(int $id, Request $request, ContentSectionForm $form): string | RedirectResponse
     {
         $contentSection = ContentSection::query()->findOrFail($id);
+
+        $this->breadcrumbs->setAdminBreadcrumbs($contentSection->content_type_id, $id);
 
         $form->setValues(
             [
@@ -114,7 +123,7 @@ class ContentSectionsController extends BaseAdminController
                 $form->validate();
                 $values = $form->getRequestValues();
                 $contentSection->update($values);
-                $session->flash('message', __('The Section was Successfully Updated'));
+                $this->session->flash('message', __('The Section was Successfully Updated'));
                 return new RedirectResponse(route('content.admin.sections', ['type' => $contentSection->content_type_id]));
             } catch (ValidationException $validationException) {
                 return (new RedirectResponse(route('content.admin.sections.edit', ['id' => $id])))
@@ -131,14 +140,14 @@ class ContentSectionsController extends BaseAdminController
         ]);
     }
 
-    public function delete(int $type, int $id, Request $request, Session $session): RedirectResponse | string
+    public function delete(int $type, int $id, Request $request): RedirectResponse | string
     {
         $data = [];
         $contentSection = ContentSection::query()->findOrFail($id);
 
         if ($request->isPost()) {
             $contentSection->delete();
-            $session->flash('message', __('The Section was Successfully Deleted'));
+            $this->session->flash('message', __('The Section was Successfully Deleted'));
             return new RedirectResponse(route('content.admin.sections', ['type' => $type]));
         }
 

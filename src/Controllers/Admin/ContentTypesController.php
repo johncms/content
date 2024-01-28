@@ -18,33 +18,34 @@ class ContentTypesController extends BaseAdminController
 {
     protected string $moduleName = 'johncms/content';
 
-    public function __construct()
-    {
+    public function __construct(
+        private readonly Session $session
+    ) {
         parent::__construct();
         $this->navChain->add(__('Content'), route('content.admin.index'));
         $this->metaTagManager->setAll(__('Content'));
     }
 
-    public function index(Session $session): string
+    public function index(): string
     {
         $contentTypes = ContentType::query()->get();
 
         return $this->render->render('johncms/content::admin/index', [
             'data' => [
-                'message'      => $session->getFlash('message'),
+                'message'      => $this->session->getFlash('message'),
                 'contentTypes' => ContentTypeResource::createFromCollection($contentTypes)->toArray(),
             ],
         ]);
     }
 
-    public function create(Request $request, Session $session, ContentTypeForm $form): string | RedirectResponse
+    public function create(Request $request, ContentTypeForm $form): string | RedirectResponse
     {
         if ($request->isPost()) {
             try {
                 $form->validate();
                 $values = $form->getRequestValues();
                 ContentType::query()->create($values);
-                $session->flash('message', __('The Content Type was Successfully Created'));
+                $this->session->flash('message', __('The Content Type was Successfully Created'));
                 return new RedirectResponse(route('content.admin.index'));
             } catch (ValidationException $validationException) {
                 return (new RedirectResponse(route('content.admin.type.create')))
@@ -61,7 +62,7 @@ class ContentTypesController extends BaseAdminController
         ]);
     }
 
-    public function edit(int $id, Request $request, Session $session, ContentTypeForm $form): string | RedirectResponse
+    public function edit(int $id, Request $request, ContentTypeForm $form): string | RedirectResponse
     {
         $contentType = ContentType::query()->findOrFail($id);
 
@@ -77,7 +78,7 @@ class ContentTypesController extends BaseAdminController
                 $form->validate();
                 $values = $form->getRequestValues();
                 $contentType->update($values);
-                $session->flash('message', __('The Content Type was Successfully Updated'));
+                $this->session->flash('message', __('The Content Type was Successfully Updated'));
                 return new RedirectResponse(route('content.admin.index'));
             } catch (ValidationException $validationException) {
                 return (new RedirectResponse(route('content.admin.type.edit', ['id' => $id])))
@@ -94,14 +95,14 @@ class ContentTypesController extends BaseAdminController
         ]);
     }
 
-    public function delete(int $id, Request $request, Session $session, ContentTypeService $contentTypeService): RedirectResponse | string
+    public function delete(int $id, Request $request, ContentTypeService $contentTypeService): RedirectResponse | string
     {
         $data = [];
         $contentType = ContentType::query()->findOrFail($id);
 
         if ($request->isPost()) {
             $contentTypeService->delete($contentType);
-            $session->flash('message', __('The Content Type was Successfully Deleted'));
+            $this->session->flash('message', __('The Content Type was Successfully Deleted'));
             return new RedirectResponse(route('content.admin.index'));
         }
 

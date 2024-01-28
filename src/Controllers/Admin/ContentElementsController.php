@@ -6,6 +6,7 @@ namespace Johncms\Content\Controllers\Admin;
 
 use Johncms\Content\Forms\ContentElementForm;
 use Johncms\Content\Models\ContentElement;
+use Johncms\Content\Services\NavChainService;
 use Johncms\Controller\BaseAdminController;
 use Johncms\Exceptions\ValidationException;
 use Johncms\Http\Request;
@@ -16,15 +17,19 @@ class ContentElementsController extends BaseAdminController
 {
     protected string $moduleName = 'johncms/content';
 
-    public function __construct()
-    {
+    public function __construct(
+        private readonly NavChainService $breadcrumbs,
+        private readonly Session $session
+    ) {
         parent::__construct();
         $this->navChain->add(__('Content'), route('content.admin.index'));
         $this->metaTagManager->setAll(__('Content'));
     }
 
-    public function create(int $type, ?int $sectionId, Request $request, Session $session, ContentElementForm $form): string | RedirectResponse
+    public function create(int $type, ?int $sectionId, Request $request, ContentElementForm $form): string | RedirectResponse
     {
+        $this->breadcrumbs->setAdminBreadcrumbs($type, $sectionId);
+
         if ($request->isPost()) {
             try {
                 $form->validate();
@@ -36,7 +41,7 @@ class ContentElementsController extends BaseAdminController
                 }
 
                 ContentElement::query()->create($values);
-                $session->flash('message', __('The Element was Successfully Created'));
+                $this->session->flash('message', __('The Element was Successfully Created'));
                 return new RedirectResponse(route('content.admin.sections', ['sectionId' => $sectionId, 'type' => $type]));
             } catch (ValidationException $validationException) {
                 return (new RedirectResponse(route('content.admin.elements.create', ['sectionId' => $sectionId, 'type' => $type])))
@@ -49,13 +54,15 @@ class ContentElementsController extends BaseAdminController
             'formFields'       => $form->getFormFields(),
             'validationErrors' => $form->getValidationErrors(),
             'storeUrl'         => route('content.admin.elements.create', ['sectionId' => $sectionId, 'type' => $type]),
-            'listUrl'          => route('content.admin.index'),
+            'listUrl'          => route('content.admin.sections', ['sectionId' => $sectionId, 'type' => $type]),
         ]);
     }
 
-    public function edit(int $elementId, Request $request, Session $session, ContentElementForm $form): string | RedirectResponse
+    public function edit(int $elementId, Request $request, ContentElementForm $form): string | RedirectResponse
     {
         $element = ContentElement::query()->findOrFail($elementId);
+
+        $this->breadcrumbs->setAdminBreadcrumbs($element->content_type_id, $element->section_id);
 
         // TODO: Refactoring
         $form->setValues(
@@ -73,7 +80,7 @@ class ContentElementsController extends BaseAdminController
                 $form->validate();
                 $values = $form->getRequestValues();
                 $element->update($values);
-                $session->flash('message', __('The Element was Successfully Updated'));
+                $this->session->flash('message', __('The Element was Successfully Updated'));
 
                 return new RedirectResponse(route('content.admin.sections', ['sectionId' => $element->section_id, 'type' => $element->content_type_id]));
             } catch (ValidationException $validationException) {
@@ -91,14 +98,14 @@ class ContentElementsController extends BaseAdminController
         ]);
     }
 
-    public function delete(int $id, Request $request, Session $session): RedirectResponse | string
+    public function delete(int $id, Request $request): RedirectResponse | string
     {
         $data = [];
         $element = ContentElement::query()->findOrFail($id);
 
         if ($request->isPost()) {
             $element->delete();
-            $session->flash('message', __('The Element was Successfully Deleted'));
+            $this->session->flash('message', __('The Element was Successfully Deleted'));
             return new RedirectResponse(route('content.admin.sections', ['sectionId' => $element->section_id, 'type' => $element->content_type_id]));
         }
 
