@@ -31,15 +31,20 @@ class NavChainService
         return array_values($path);
     }
 
-    public function setAdminBreadcrumbs(int $typeId, ?int $sectionId = null): void
+    public function setAdminBreadcrumbs(int $typeId, ?int $sectionId = null, bool $lastIsEmpty = false): void
     {
         $contentType = ContentType::query()->findOrFail($typeId);
         $this->navChain->add($contentType->name, route('content.admin.sections', ['type' => $contentType->id]));
 
         if ($sectionId) {
             $sections = $this->getNavPathToSection($sectionId);
-            foreach ($sections as $section) {
-                $this->navChain->add($section->name, route('content.admin.sections', ['sectionId' => $section->id, 'type' => $contentType->id]));
+            $total = count($sections);
+            foreach ($sections as $key => $section) {
+                if (! $lastIsEmpty || $total !== ($key + 1)) {
+                    $this->navChain->add($section->name, route('content.admin.sections', ['sectionId' => $section->id, 'type' => $contentType->id]));
+                } else {
+                    $this->navChain->add($section->name);
+                }
             }
         }
     }

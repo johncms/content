@@ -30,6 +30,7 @@ class ContentElementsController extends BaseAdminController
     {
         $this->breadcrumbs->setAdminBreadcrumbs($type, $sectionId);
         $this->metaTagManager->setAll(__('Create Element'));
+        $this->navChain->add(__('Create Element'));
 
         if ($request->isPost()) {
             try {
@@ -65,7 +66,8 @@ class ContentElementsController extends BaseAdminController
         $element = ContentElement::query()->findOrFail($elementId);
 
         $this->breadcrumbs->setAdminBreadcrumbs($element->content_type_id, $element->section_id);
-        $this->metaTagManager->setAll(__('Edit Element'));
+        $this->metaTagManager->setAll($element->name);
+        $this->navChain->add($element->name);
 
         // TODO: Refactoring
         $form->setValues(

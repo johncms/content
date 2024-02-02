@@ -41,7 +41,7 @@ class ContentSectionsController extends BaseAdminController
             $this->metaTagManager->setAll($contentType->name);
         }
 
-        $this->breadcrumbs->setAdminBreadcrumbs($type, $sectionId);
+        $this->breadcrumbs->setAdminBreadcrumbs($type, $sectionId, true);
 
         $contentSections = ContentSection::query()
             ->when($sectionId > 0, function (Builder $query) use ($sectionId) {
@@ -80,6 +80,7 @@ class ContentSectionsController extends BaseAdminController
     {
         $this->breadcrumbs->setAdminBreadcrumbs($type, $sectionId);
         $this->metaTagManager->setAll(__('Create Section'));
+        $this->navChain->add(__('Create Section'));
 
         $form->setValues(
             [
@@ -118,7 +119,8 @@ class ContentSectionsController extends BaseAdminController
         $contentSection = ContentSection::query()->findOrFail($id);
 
         $this->breadcrumbs->setAdminBreadcrumbs($contentSection->content_type_id, $id);
-        $this->metaTagManager->setAll(__('Edit Section'));
+        $this->metaTagManager->setAll($contentSection->name);
+        $this->navChain->add($contentSection->name);
 
         $form->setValues(
             [
