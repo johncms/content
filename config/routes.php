@@ -5,11 +5,10 @@ declare(strict_types=1);
 use Johncms\Content\Controllers\Admin\ContentElementsController;
 use Johncms\Content\Controllers\Admin\ContentSectionsController;
 use Johncms\Content\Controllers\Admin\ContentTypesController;
-use League\Route\RouteGroup;
-use League\Route\Router;
+use Johncms\Router\RouteCollection;
 
-return function (Router $router) {
-    $router->group('/admin/content', function (RouteGroup $route) {
+return function (RouteCollection $router) {
+    $router->group('/admin/content', function (RouteCollection $route) {
         // Types
         $route->get('/', [ContentTypesController::class, 'index'])->setName('content.admin.index');
         $route->get('/types/create[/]', [ContentTypesController::class, 'create'])->setName('content.admin.type.create');
@@ -36,7 +35,5 @@ return function (Router $router) {
         $route->post('/elements/edit/{elementId:number}[/]', [ContentElementsController::class, 'edit']);
         $route->get('/elements/delete/{id:number}[/]', [ContentElementsController::class, 'delete'])->setName('content.admin.elements.delete');
         $route->post('/elements/delete/{id:number}[/]', [ContentElementsController::class, 'delete']);
-
-
     });
 };
