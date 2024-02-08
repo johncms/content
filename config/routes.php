@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Johncms\Content\Controllers\Admin\ContentElementsController;
 use Johncms\Content\Controllers\Admin\ContentSectionsController;
 use Johncms\Content\Controllers\Admin\ContentTypesController;
+use Johncms\Content\Controllers\Public\PublicContentController;
 use Johncms\Router\RouteCollection;
 
 return function (RouteCollection $router) {
@@ -27,4 +28,9 @@ return function (RouteCollection $router) {
         $route->map(['GET', 'POST'], '/elements/edit/{elementId:number}/', [ContentElementsController::class, 'edit'])->setName('content.admin.elements.edit');
         $route->map(['GET', 'POST'], '/elements/delete/{id:number}/', [ContentElementsController::class, 'delete'])->setName('content.admin.elements.delete');
     });
+
+    // Public
+    $router->get('/{type:slug}', [PublicContentController::class, 'index'])->setName('content.type')->setPriority(-100000);
+    $router->get('/{type:slug}/{section:path}/{element:slug}.html', [PublicContentController::class, 'element'])->setName('content.element')->setPriority(-100010);
+    $router->get('/{type:slug}/{section:path}', [PublicContentController::class, 'section'])->setName('content.section')->setPriority(-100020);
 };
