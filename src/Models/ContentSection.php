@@ -17,6 +17,11 @@ class ContentSection extends Model
         'code',
     ];
 
+    public function contentType(): HasOne
+    {
+        return $this->hasOne(ContentType::class, 'id', 'content_type_id');
+    }
+
     public function parentSection(): HasOne
     {
         return $this->hasOne(__CLASS__, 'id', 'parent');

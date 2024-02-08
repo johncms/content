@@ -31,6 +31,6 @@ return function (RouteCollection $router) {
 
     // Public
     $router->get('/{type:slug}', [PublicContentController::class, 'index'])->setName('content.type')->setPriority(-100000);
-    $router->get('/{type:slug}/{section:path}/{element:slug}.html', [PublicContentController::class, 'element'])->setName('content.element')->setPriority(-100010);
-    $router->get('/{type:slug}/{section:path}', [PublicContentController::class, 'section'])->setName('content.section')->setPriority(-100020);
+    $router->get('/{type:slug}/{sectionPath:path}/{element:slug}.html', [PublicContentController::class, 'element'])->setName('content.element')->setPriority(-100010);
+    $router->get('/{type:slug}/{sectionPath:path}', [PublicContentController::class, 'section'])->setName('content.section')->setPriority(-100020);
 };

@@ -24,13 +24,27 @@ class PublicContentController extends BaseController
         ]);
     }
 
-    public function section(string $type, string $section)
+    public function section(string $type, string $sectionPath, PublicSectionsService $sectionService): string
     {
-        dd('section', $type, $section);
+        $contentType = ContentType::query()->where('code', $type)->firstOrFail();
+        $this->navChain->add($contentType->name, route('content.type', ['type' => $contentType->code]));
+
+        $sections = $sectionService->checkAndGetPath($sectionPath, $contentType);
+        foreach ($sections as $section) {
+            $this->navChain->add($section->name, route('content.section', ['type' => $contentType->code, 'sectionPath' => $sectionService->getCachedPath($section->id)]));
+        }
+
+        $currentSection = $sections[array_key_last($sections)];
+        $this->metaTagManager->setAll($currentSection->name);
+
+        return $this->render->render('johncms/content::public/index', [
+            'contentType' => $contentType,
+            'sections'    => $sectionService->getChildrenSections($contentType, $currentSection),
+        ]);
     }
 
-    public function element(string $type, string $section, string $element)
+    public function element(string $type, string $sectionPath, string $element)
     {
-        dd('element', $type, $section, $element);
+        dd('element', $type, $sectionPath, $element);
     }
 }
