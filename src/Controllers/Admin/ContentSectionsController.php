@@ -98,7 +98,7 @@ class ContentSectionsController extends BaseAdminController
                 $values['content_type_id'] = $type;
                 ContentSection::query()->create($values);
                 $this->session->flash('message', __('The Section was Successfully Created'));
-                return new RedirectResponse(route('content.admin.sections', ['type' => $type]));
+                return new RedirectResponse(route('content.admin.sections', ['sectionId' => $sectionId, 'type' => $type]));
             } catch (ValidationException $validationException) {
                 return (new RedirectResponse(route('content.admin.sections.create', ['sectionId' => $sectionId, 'type' => $type])))
                     ->withPost()
@@ -140,7 +140,7 @@ class ContentSectionsController extends BaseAdminController
                 $values['code'] = empty($values['code']) ? Str::slug($values['name']) : Str::slug($values['code']);
                 $contentSection->update($values);
                 $this->session->flash('message', __('The Section was Successfully Updated'));
-                return new RedirectResponse(route('content.admin.sections', ['type' => $contentSection->content_type_id]));
+                return new RedirectResponse(route('content.admin.sections', ['sectionId' => $contentSection->parent, 'type' => $contentSection->content_type_id]));
             } catch (ValidationException $validationException) {
                 return (new RedirectResponse(route('content.admin.sections.edit', ['id' => $id])))
                     ->withPost()
@@ -165,7 +165,7 @@ class ContentSectionsController extends BaseAdminController
         if ($request->isPost()) {
             $contentSection->delete();
             $this->session->flash('message', __('The Section was Successfully Deleted'));
-            return new RedirectResponse(route('content.admin.sections', ['type' => $type]));
+            return new RedirectResponse(route('content.admin.sections', ['sectionId' => $contentSection->parent, 'type' => $type]));
         }
 
         $data['elementName'] = $contentSection->name;
