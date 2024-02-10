@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Johncms\Content\Controllers\Admin;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 use Johncms\Content\Forms\ContentSectionForm;
 use Johncms\Content\Models\ContentElement;
 use Johncms\Content\Models\ContentSection;
@@ -93,7 +94,7 @@ class ContentSectionsController extends BaseAdminController
             try {
                 $form->validate();
                 $values = $form->getRequestValues();
-                // TODO: Refactoring
+                $values['code'] = empty($values['code']) ? Str::slug($values['name']) : Str::slug($values['code']);
                 $values['content_type_id'] = $type;
                 ContentSection::query()->create($values);
                 $this->session->flash('message', __('The Section was Successfully Created'));
@@ -136,6 +137,7 @@ class ContentSectionsController extends BaseAdminController
             try {
                 $form->validate();
                 $values = $form->getRequestValues();
+                $values['code'] = empty($values['code']) ? Str::slug($values['name']) : Str::slug($values['code']);
                 $contentSection->update($values);
                 $this->session->flash('message', __('The Section was Successfully Updated'));
                 return new RedirectResponse(route('content.admin.sections', ['type' => $contentSection->content_type_id]));
