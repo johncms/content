@@ -48,7 +48,6 @@ class ContentTypesController extends BaseAdminController
             try {
                 $form->validate();
                 $values = $form->getRequestValues();
-                $values['code'] = empty($values['code']) ? Str::slug($values['name']) : Str::slug($values['code']);
                 ContentType::query()->create($values);
                 $this->session->flash('message', __('The Content Type was Successfully Created'));
                 return new RedirectResponse(route('content.admin.index'));
@@ -75,6 +74,7 @@ class ContentTypesController extends BaseAdminController
 
         $form->setValues(
             [
+                'id'   => $contentType->id,
                 'name' => $contentType->name,
                 'code' => $contentType->code,
             ]
