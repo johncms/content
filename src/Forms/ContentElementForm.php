@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Johncms\Content\Models\ContentElement;
 use Johncms\Forms\AbstractForm;
+use Johncms\Forms\Inputs\CKEditor;
 use Johncms\Forms\Inputs\InputText;
-use Johncms\Forms\Inputs\Textarea;
 
 class ContentElementForm extends AbstractForm
 {
@@ -42,7 +42,7 @@ class ContentElementForm extends AbstractForm
                 ]
             );
 
-        $fields['detail_text'] = (new Textarea())
+        $fields['detail_text'] = (new CKEditor())
             ->setLabel(__('Detail Text'))
             ->setPlaceholder(p__('placeholder', 'Enter the Detail Text'))
             ->setNameAndId('detail_text')
