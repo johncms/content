@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Johncms\Content\Controllers\Admin;
 
+use Illuminate\Support\Str;
 use Johncms\Content\Forms\ContentElementForm;
 use Johncms\Content\Models\ContentElement;
 use Johncms\Content\Services\NavChainService;
@@ -36,7 +37,7 @@ class ContentElementsController extends BaseAdminController
             try {
                 $form->validate();
                 $values = $form->getRequestValues();
-                // TODO: Refactoring
+                $values['code'] = empty($values['code']) ? Str::slug($values['name']) : Str::slug($values['code']);
                 $values['content_type_id'] = $type;
                 if ($sectionId > 0) {
                     $values['section_id'] = $sectionId;
@@ -69,7 +70,6 @@ class ContentElementsController extends BaseAdminController
         $this->metaTagManager->setAll($element->name);
         $this->navChain->add($element->name);
 
-        // TODO: Refactoring
         $form->setValues(
             [
                 'name'        => $element->name,
@@ -84,6 +84,7 @@ class ContentElementsController extends BaseAdminController
             try {
                 $form->validate();
                 $values = $form->getRequestValues();
+                $values['code'] = empty($values['code']) ? Str::slug($values['name']) : Str::slug($values['code']);
                 $element->update($values);
                 $this->session->flash('message', __('The Element was Successfully Updated'));
 

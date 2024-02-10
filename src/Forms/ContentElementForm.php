@@ -24,8 +24,7 @@ class ContentElementForm extends AbstractForm
             ->setLabel(__('Code'))
             ->setPlaceholder(p__('placeholder', 'Enter the Code of the Element'))
             ->setNameAndId('code')
-            ->setValue($this->getValue('code'))
-            ->setValidationRules(['NotEmpty']);
+            ->setValue($this->getValue('code'));
 
         $fields['detail_text'] = (new Textarea())
             ->setLabel(__('Detail Text'))
