@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Johncms\Content\Controllers\Admin;
 
-use Illuminate\Support\Str;
 use Johncms\Content\Forms\ContentElementForm;
 use Johncms\Content\Models\ContentElement;
 use Johncms\Content\Services\NavChainService;
@@ -44,11 +43,6 @@ class ContentElementsController extends BaseAdminController
             try {
                 $form->validate();
                 $values = $form->getRequestValues();
-                $values['content_type_id'] = $type;
-                if ($sectionId > 0) {
-                    $values['section_id'] = $sectionId;
-                }
-
                 ContentElement::query()->create($values);
                 $this->session->flash('message', __('The Element was Successfully Created'));
                 return new RedirectResponse(route('content.admin.sections', ['sectionId' => $sectionId, 'type' => $type]));

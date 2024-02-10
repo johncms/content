@@ -55,6 +55,8 @@ class ContentElementForm extends AbstractForm
     {
         $values = parent::getRequestValues();
         $values['code'] = empty($values['code']) ? Str::slug($values['name']) : Str::slug($values['code']);
+        $values['content_type_id'] = $this->getValue('content_type_id');
+        $values['section_id'] = $this->getValue('section_id');
         return $values;
     }
 }
