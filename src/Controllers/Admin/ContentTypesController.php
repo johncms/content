@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Johncms\Content\Controllers\Admin;
 
-use Illuminate\Support\Str;
 use Johncms\Content\Forms\ContentTypeForm;
 use Johncms\Content\Models\ContentType;
 use Johncms\Content\Resources\ContentTypeResource;
@@ -14,8 +13,6 @@ use Johncms\Exceptions\ValidationException;
 use Johncms\Http\Request;
 use Johncms\Http\Response\RedirectResponse;
 use Johncms\Http\Session;
-
-use const _PHPStan_39fe102d2\__;
 
 class ContentTypesController extends BaseAdminController
 {
@@ -84,7 +81,6 @@ class ContentTypesController extends BaseAdminController
             try {
                 $form->validate();
                 $values = $form->getRequestValues();
-                $values['code'] = empty($values['code']) ? Str::slug($values['name']) : Str::slug($values['code']);
                 $contentType->update($values);
                 $this->session->flash('message', __('The Content Type was Successfully Updated'));
                 return new RedirectResponse(route('content.admin.index'));

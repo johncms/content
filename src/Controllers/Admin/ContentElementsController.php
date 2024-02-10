@@ -33,11 +33,17 @@ class ContentElementsController extends BaseAdminController
         $this->metaTagManager->setAll(__('Create Element'));
         $this->navChain->add(__('Create Element'));
 
+        $form->setValues(
+            [
+                'content_type_id' => $type,
+                'section_id'      => $sectionId !== 0 ? $sectionId : null,
+            ]
+        );
+
         if ($request->isPost()) {
             try {
                 $form->validate();
                 $values = $form->getRequestValues();
-                $values['code'] = empty($values['code']) ? Str::slug($values['name']) : Str::slug($values['code']);
                 $values['content_type_id'] = $type;
                 if ($sectionId > 0) {
                     $values['section_id'] = $sectionId;
@@ -72,9 +78,12 @@ class ContentElementsController extends BaseAdminController
 
         $form->setValues(
             [
-                'name'        => $element->name,
-                'code'        => $element->code,
-                'detail_text' => $element->detail_text,
+                'id'              => $element->id,
+                'content_type_id' => $element->content_type_id,
+                'section_id'      => $element->section_id,
+                'name'            => $element->name,
+                'code'            => $element->code,
+                'detail_text'     => $element->detail_text,
             ]
         );
 
@@ -84,7 +93,6 @@ class ContentElementsController extends BaseAdminController
             try {
                 $form->validate();
                 $values = $form->getRequestValues();
-                $values['code'] = empty($values['code']) ? Str::slug($values['name']) : Str::slug($values['code']);
                 $element->update($values);
                 $this->session->flash('message', __('The Element was Successfully Updated'));
 
