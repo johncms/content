@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Johncms\Content\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Johncms\Files\Models\File;
 
 class ContentElement extends Model
 {
@@ -17,4 +19,9 @@ class ContentElement extends Model
         'code',
         'detail_text',
     ];
+
+    public function files(): BelongsToMany
+    {
+        return $this->belongsToMany(File::class, 'content_element_files', 'element_id', 'file_id');
+    }
 }

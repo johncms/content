@@ -46,6 +46,8 @@ class ContentElementForm extends AbstractForm
             ->setLabel(__('Detail Text'))
             ->setPlaceholder(p__('placeholder', 'Enter the Detail Text'))
             ->setNameAndId('detail_text')
+            ->setUploadUrl(route('content.admin.elements.uploadFile'))
+            ->setFilesInputName('detail_text_files[]')
             ->setValue($this->getValue('detail_text'));
 
         return $fields;

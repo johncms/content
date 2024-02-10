@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace Johncms\Content\Controllers\Admin;
 
+use GuzzleHttp\Psr7\UploadedFile;
 use Johncms\Content\Forms\ContentElementForm;
 use Johncms\Content\Models\ContentElement;
 use Johncms\Content\Services\NavChainService;
 use Johncms\Controller\BaseAdminController;
 use Johncms\Exceptions\ValidationException;
+use Johncms\Files\FileInfo;
+use Johncms\Files\FileStorage;
 use Johncms\Http\Request;
 use Johncms\Http\Response\RedirectResponse;
 use Johncms\Http\Session;
+use Psr\Log\LoggerInterface;
 
 class ContentElementsController extends BaseAdminController
 {
@@ -43,7 +47,14 @@ class ContentElementsController extends BaseAdminController
             try {
                 $form->validate();
                 $values = $form->getRequestValues();
-                ContentElement::query()->create($values);
+                $element = ContentElement::query()->create($values);
+
+                // Save file ids
+                $files = (array) $request->getPost('detail_text_files', [], FILTER_VALIDATE_INT);
+                if (! empty($files)) {
+                    $element->files()->sync($files);
+                }
+
                 $this->session->flash('message', __('The Element was Successfully Created'));
                 return new RedirectResponse(route('content.admin.sections', ['sectionId' => $sectionId, 'type' => $type]));
             } catch (ValidationException $validationException) {
@@ -88,6 +99,13 @@ class ContentElementsController extends BaseAdminController
                 $form->validate();
                 $values = $form->getRequestValues();
                 $element->update($values);
+
+                $files = (array) $request->getPost('detail_text_files', [], FILTER_VALIDATE_INT);
+                if (! empty($files)) {
+                    $files = array_merge($files, $element->files->pluck('id')->toArray());
+                    $element->files()->sync($files);
+                }
+
                 $this->session->flash('message', __('The Element was Successfully Updated'));
 
                 return new RedirectResponse(route('content.admin.sections', ['sectionId' => $element->section_id, 'type' => $element->content_type_id]));
@@ -122,5 +140,33 @@ class ContentElementsController extends BaseAdminController
         $data['actionUrl'] = route('content.admin.elements.delete', ['id' => $id]);
 
         return $this->render->render('johncms/content::admin/delete', ['data' => $data]);
+    }
+
+    public function uploadFile(Request $request, LoggerInterface $logger, FileStorage $storage): array
+    {
+        try {
+            /** @var UploadedFile[] $files */
+            $files = $request->getUploadedFiles();
+            $file_info = new FileInfo($files['upload']->getClientFilename());
+            if (! $file_info->isImage()) {
+                return [
+                    'error' => [
+                        'message' => __('Only images are allowed'),
+                    ],
+                ];
+            }
+
+            $file = $storage->saveFromRequest('upload', 'content');
+            return [
+                'id'       => $file->id,
+                'name'     => $file->name,
+                'uploaded' => 1,
+                'url'      => $file->url,
+            ];
+        } catch (\Throwable $e) {
+            $logger->error($e->getMessage(), ['trace' => $e->getTrace()]);
+            http_response_code(500);
+            return ['errors' => $e->getMessage()];
+        }
     }
 }

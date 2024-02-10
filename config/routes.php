@@ -27,6 +27,7 @@ return function (RouteCollection $router) {
         $route->map(['GET', 'POST'], '/elements/create/{type:number}/{sectionId:number?}', [ContentElementsController::class, 'create'])->setName('content.admin.elements.create');
         $route->map(['GET', 'POST'], '/elements/edit/{elementId:number}', [ContentElementsController::class, 'edit'])->setName('content.admin.elements.edit');
         $route->map(['GET', 'POST'], '/elements/delete/{id:number}', [ContentElementsController::class, 'delete'])->setName('content.admin.elements.delete');
+        $route->map(['GET', 'POST'], '/elements/upload-file', [ContentElementsController::class, 'uploadFile'])->setName('content.admin.elements.uploadFile');
     });
 
     // Public
